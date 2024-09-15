@@ -1,0 +1,120 @@
+---
+title: "Data607_Assignment3"
+author: "aw"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+
+I used the following libraries in order to answer the below questions.
+
+```{r libs}
+library(tidyverse)
+library(dplyr)
+library(stringr)
+```
+
+## Question 1
+
+You can find the raw data used to answer this question here <https://github.com/fivethirtyeight/data/blob/master/college-majors/majors-list.csv>
+
+```{r majors}
+college_majors <- read_csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv")
+college_majors
+
+college_majors |>
+  filter(str_detect(Major, "DATA|STATISTICS")) |>
+  count(Major, sort=TRUE)
+```
+
+```{r cars}
+summary(cars)
+```
+
+## Question 2
+
+Write code that transforms the data below:
+
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"
+
+Into a format like this:
+
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+\*I was slightly confused by the wording of this question. I assumed what was meant was to create a new string vector whose output would match the output of c(fruits).
+
+```{r fruits}
+output_string <- "[1] \"bell pepper\"  \"bilberry\"  \"blackberry\"  \"blood orange\"\n[5] \"blueberry\"  \"cantaloupe\"  \"chili pepper\"  \"cloudberry\"\n[9] \"elderberry\"  \"lime\"  \"lychee\"  \"mulberry\"\n[13] \"olive\"  \"salal berry\""
+
+"OG String Vector:"
+cat(output_string)
+
+new_word_vec <- function(string) {
+
+  words <- str_extract_all(string, '"[a-zA-Z ]+"')[[1]]
+  
+  words <- str_replace_all(words, '"', '')
+  
+  return(words)
+}
+
+"Desired Output:"
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+vec <- new_word_vec(output_string)
+
+"Reorganized output:"
+print(vec)
+```
+
+## Question 3
+
+Describe, in words, what these expressions will match:
+
+a) **(.)\\1\\1** \
+A character is repeated three times (.) selects any character, then repeated twice consecutively
+
+b) **"(.)(.)\\2\\1"** \
+This would select four character palindromes where the first two characters are randomly selected and then the third character is the second selection group and the fourth is the first selection group
+
+c) **(..)\\1** \
+Selects the two consecutive characters and then repeats that group of characters once
+
+d) **"(.).\\1.\\1"** \
+First character group and then selects a single character immediately after, then it repeats the first selection group with the next trailing character and then finally repeats the first selection group again
+
+e) **"(.)(.)(.).*\\3\\2\\1"*** *\
+*Captures three characters, then *".*' captures 0-any characters except for a new line (essentially the rest of the string), finally the 3rd then 2nd and 1st capture group are repeated in that order
+
+## Question 4
+
+a) Start and end with the same character.
+
+```{r same_char}
+
+str_view(words, "\\b(.).*\\1$")
+```
+
+b) Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+
+```{r repeated_pair}
+str_view(words, "(..).*\\1")
+```
+
+c) Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.)
+
+```{r three_places}
+
+str_view(words, "(.)(.*\\1){2,}")
+```
